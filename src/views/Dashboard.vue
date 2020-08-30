@@ -19,7 +19,7 @@ export default {
   data() {
     return {
       isLoading: true,
-      events: [],
+      events: []
     };
   },
   created() {
@@ -27,6 +27,6 @@ export default {
       this.events = data.events.events;
       this.isLoading = false;
     });
-  },
+  }
 };
 </script>

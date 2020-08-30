@@ -12,13 +12,19 @@ app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
   res.json({
-    message: "Welcome to the API.",
+    message: "Welcome to the API."
   });
 });
 
-app.get("/dashboard", (req, res) => {
-  res.json({
-    events: events,
+app.get("/dashboard", verifyToken, (req, res) => {
+  jwt.verify(req.token, "the_secret_key", err => {
+    if (err) {
+      res.sendStatus(401);
+    } else {
+      res.json({
+        events: events
+      });
+    }
   });
 });
 
@@ -27,7 +33,7 @@ app.post("/register", (req, res) => {
     const user = {
       name: req.body.name,
       email: req.body.email,
-      password: req.body.password,
+      password: req.body.password
       // In a production app, you'll want to encrypt the password
     };
 
@@ -37,16 +43,20 @@ app.post("/register", (req, res) => {
     if (dbUserEmail === req.body.email) {
       res.sendStatus(400);
     } else {
-      fs.writeFile("./db/user.json", data, (err) => {
+      fs.writeFile("./db/user.json", data, err => {
         if (err) {
           console.log(err + data);
         } else {
-          const token = jwt.sign({ user }, "the_secret_key");
+          const token = jwt.sign({
+              user
+            },
+            "the_secret_key"
+          );
           // In a production app, you'll want the secret key to be an environment variable
           res.json({
             token,
             email: user.email,
-            name: user.name,
+            name: user.name
           });
         }
       });
@@ -64,12 +74,16 @@ app.post("/login", (req, res) => {
     req.body.email === userInfo.email &&
     req.body.password === userInfo.password
   ) {
-    const token = jwt.sign({ userInfo }, "the_secret_key");
+    const token = jwt.sign({
+        userInfo
+      },
+      "the_secret_key"
+    );
     // In a production app, you'll want the secret key to be an environment variable
     res.json({
       token,
       email: userInfo.email,
-      name: userInfo.name,
+      name: userInfo.name
     });
   } else {
     res.sendStatus(400);
