@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form @submit.prevent="register">
+    <form @submit.prevent="login">
       <label for="email">
         Email:
       </label>
@@ -15,6 +15,8 @@
         Login
       </button>
 
+      <p>{{ error }}</p>
+
       <router-link to="/register">
         Don't have an account? Register.
       </router-link>
@@ -27,11 +29,12 @@ export default {
   data() {
     return {
       email: "",
-      password: ""
+      password: "",
+      error: null
     };
   },
   methods: {
-    register() {
+    login() {
       this.$store
         .dispatch("login", {
           email: this.email,
@@ -39,7 +42,8 @@ export default {
         })
         .then(() => {
           this.$router.push({ name: "dashboard" });
-        });
+        })
+        .catch(err => (this.error = err.response.data.error));
     }
   }
 };
